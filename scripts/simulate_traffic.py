@@ -19,6 +19,7 @@ BOOTSTRAP_SERVERS = ["localhost:9092"]
 def create_valid_event():
     """Generates a perfectly valid event matching the schema."""
     return {
+        "_schema": "user_event",
         "event_id": str(uuid.uuid4()),
         "event_type": random.choice(["login", "logout", "purchase", "page_view"]),
         "user_id": f"USER-{random.randint(1000, 9999)}",
