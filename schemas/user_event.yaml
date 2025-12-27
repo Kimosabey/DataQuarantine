@@ -1,0 +1,90 @@
+name: "user_event"
+version: "1.0.0"
+type: "json_schema"
+description: "User behavior events for analytics and ML training"
+
+schema:
+  type: object
+  properties:
+    user_id:
+      type: string
+      description: "Unique user identifier"
+      pattern: "^USER[0-9]{6}$"
+      examples:
+        - "USER123456"
+    
+    event_type:
+      type: string
+      description: "Type of user event"
+      enum:
+        - "view"
+        - "click"
+        - "purchase"
+        - "add_to_cart"
+        - "remove_from_cart"
+    
+    timestamp:
+      type: string
+      format: date-time
+      description: "Event timestamp in ISO 8601 format"
+      examples:
+        - "2025-12-27T16:00:00Z"
+    
+    product_id:
+      type: string
+      description: "Product identifier (optional for non-product events)"
+      pattern: "^PROD[0-9]{1,6}$"
+      examples:
+        - "PROD123"
+        - "PROD456789"
+    
+    session_id:
+      type: string
+      description: "User session identifier"
+      examples:
+        - "sess_abc123xyz"
+    
+    metadata:
+      type: object
+      description: "Additional event metadata"
+      properties:
+        platform:
+          type: string
+          enum: ["web", "ios", "android", "api"]
+        app_version:
+          type: string
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        user_agent:
+          type: string
+        ip_address:
+          type: string
+          format: ipv4
+  
+  required:
+    - user_id
+    - event_type
+    - timestamp
+
+# Custom validation rules (optional)
+rules:
+  - name: "future_timestamp_check"
+    description: "Timestamp cannot be in the future"
+    type: "custom"
+    expression: "timestamp <= now()"
+    error_message: "Event timestamp cannot be in the future"
+  
+  - name: "product_required_for_purchase"
+    description: "Purchase events must have product_id"
+    type: "custom"
+    expression: "event_type != 'purchase' or product_id is not null"
+    error_message: "Purchase events require a product_id"
+
+# Schema evolution history
+changelog:
+  - version: "1.0.0"
+    date: "2025-12-27"
+    changes:
+      - "Initial schema definition"
+      - "Added user_id, event_type, timestamp as required fields"
+      - "Added optional product_id and session_id"
+      - "Added metadata object for platform tracking"

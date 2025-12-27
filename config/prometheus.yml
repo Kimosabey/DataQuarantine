@@ -1,0 +1,38 @@
+# Prometheus Configuration for DataQuarantine
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'dataquarantine'
+    environment: 'development'
+
+# Scrape configurations
+scrape_configs:
+  # DataQuarantine API metrics
+  - job_name: 'dataquarantine'
+    static_configs:
+      - targets: ['api:8081']
+        labels:
+          service: 'dataquarantine-validator'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Kafka JMX metrics (optional)
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka:9101']
+        labels:
+          service: 'kafka-broker'
+    scrape_interval: 30s
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+
+# Alerting rules (optional)
+# rule_files:
+#   - 'alerts.yml'

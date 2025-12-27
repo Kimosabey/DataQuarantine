@@ -1,0 +1,112 @@
+name: "sensor_reading"
+version: "1.0.0"
+type: "json_schema"
+description: "IoT sensor readings for smart building monitoring"
+
+schema:
+  type: object
+  properties:
+    sensor_id:
+      type: string
+      description: "Unique sensor identifier"
+      pattern: "^SENSOR-[A-Z0-9]{8}$"
+      examples:
+        - "SENSOR-A1B2C3D4"
+    
+    reading_type:
+      type: string
+      description: "Type of sensor reading"
+      enum:
+        - "temperature"
+        - "humidity"
+        - "occupancy"
+        - "co2"
+        - "light"
+    
+    value:
+      type: number
+      description: "Sensor reading value"
+    
+    unit:
+      type: string
+      description: "Unit of measurement"
+      enum:
+        - "celsius"
+        - "fahrenheit"
+        - "percent"
+        - "ppm"
+        - "lux"
+        - "boolean"
+    
+    timestamp:
+      type: string
+      format: date-time
+      description: "Reading timestamp"
+    
+    location:
+      type: object
+      description: "Sensor location"
+      properties:
+        building:
+          type: string
+        floor:
+          type: integer
+        room:
+          type: string
+      required:
+        - building
+        - floor
+    
+    quality:
+      type: string
+      description: "Data quality indicator"
+      enum:
+        - "good"
+        - "fair"
+        - "poor"
+      default: "good"
+  
+  required:
+    - sensor_id
+    - reading_type
+    - value
+    - unit
+    - timestamp
+
+# Custom validation rules
+rules:
+  - name: "temperature_range"
+    description: "Temperature must be within valid range"
+    type: "custom"
+    expression: "reading_type != 'temperature' or (value >= -50 and value <= 150)"
+    error_message: "Temperature out of valid range (-50 to 150)"
+  
+  - name: "humidity_range"
+    description: "Humidity must be 0-100%"
+    type: "custom"
+    expression: "reading_type != 'humidity' or (value >= 0 and value <= 100)"
+    error_message: "Humidity must be between 0 and 100%"
+  
+  - name: "co2_range"
+    description: "CO2 must be positive"
+    type: "custom"
+    expression: "reading_type != 'co2' or value >= 0"
+    error_message: "CO2 level cannot be negative"
+  
+  - name: "future_timestamp_check"
+    description: "Timestamp cannot be in the future"
+    type: "custom"
+    expression: "timestamp <= now()"
+    error_message: "Sensor timestamp cannot be in the future"
+
+# Auto-remediation rules
+remediation:
+  - name: "convert_fahrenheit_to_celsius"
+    description: "Auto-convert Fahrenheit to Celsius if value > 150"
+    condition: "reading_type == 'temperature' and value > 150"
+    action: "value = (value - 32) * 5/9; unit = 'celsius'"
+  
+  - name: "fix_timezone"
+    description: "Add UTC timezone if missing"
+    condition: "timestamp does not end with 'Z'"
+    action: "timestamp = timestamp + 'Z'"
