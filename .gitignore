@@ -84,3 +84,14 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
+
+# Next.js (UI folder)
+dataquarantine-ui/node_modules/
+dataquarantine-ui/.next/
+dataquarantine-ui/out/
+dataquarantine-ui/build/
+dataquarantine-ui/.turbo/
+
+# Git
+.git/
+*.orig
