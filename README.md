@@ -8,12 +8,20 @@
 
 **DataQuarantine** is a production-ready streaming schema enforcement system that validates, quarantines, and monitors data quality in real-time streaming pipelines. It acts as a data quality gateway, ensuring only valid data flows through your pipeline while capturing and managing invalid records for review and reprocessing.
 
+---
+
 ## 📚 Documentation
 
-**New here?** Start with these guides:
-- **[Quick Start (3 steps)](docs/STARTUP_GUIDE.md)** - Get running in under 5 minutes
-- **[Complete Testing Guide](docs/YOUR_CHECKLIST.md)** - Verify everything works
-- **[Full Documentation Index](docs/INDEX.md)** - Navigate all 14 docs
+**📖 Complete Documentation**: [14 comprehensive guides](docs/INDEX.md) covering architecture, testing, deployment, and interviews.
+
+### Quick Links
+| Getting Started | Architecture | Testing & Demo |
+|----------------|--------------|----------------|
+| [⚡ 3-Step Quick Start](docs/STARTUP_GUIDE.md) | [🏗️ High-Level Design](docs/HLD.md) | [✅ Testing Checklist](docs/YOUR_CHECKLIST.md) |
+| [🚀 Detailed Setup](docs/QUICKSTART.md) | [🔧 Low-Level Design](docs/LLD.md) | [🧪 Full Test Guide](docs/TESTING_GUIDE.md) |
+| [🎨 UI Guide](docs/UI_DOCUMENTATION.md) | [📊 Data Flow](docs/FLOW.md) | [💼 Interview Prep](docs/INTERVIEW_PREP.md) |
+
+---
 
 ## 🚀 Key Features
 
