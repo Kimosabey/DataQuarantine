@@ -134,7 +134,7 @@ services:
     image: grafana/grafana:latest
     container_name: dataquarantine-grafana
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
@@ -172,6 +172,21 @@ services:
     volumes:
       - ./schemas:/app/schemas
       - ./config:/app/config
+
+  # Next.js UI
+  ui:
+    build:
+      context: ./dataquarantine-ui
+      dockerfile: Dockerfile
+    container_name: dataquarantine-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+    depends_on:
+      - api
+    networks:
+      - dataquarantine-network
 
 volumes:
   zookeeper-data:

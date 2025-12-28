@@ -231,11 +231,11 @@ DataQuarantine exposes Prometheus metrics:
 - `dataquarantine_validation_duration_seconds`: Validation latency
 - `dataquarantine_schema_errors_by_type`: Errors grouped by type
 
-Access Grafana dashboard at `http://localhost:3000` (default credentials: admin/admin)
+Access Grafana dashboard at `http://localhost:3001` (default credentials: admin/admin)
 
 ## 🎨 Quarantine Review UI
 
-Access the **modern Next.js dashboard** at `http://localhost:3001`:
+Access the **modern Next.js dashboard** at `http://localhost:3000`:
 
 - **Dashboard**: Real-time metrics with animated charts and glassmorphism design
 - **Records Browser**: Search, filter, and paginate quarantined records

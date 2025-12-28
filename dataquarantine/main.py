@@ -28,6 +28,11 @@ from dataquarantine.core.metrics import metrics
 from dataquarantine.validators.json_schema import JSONSchemaValidator
 from dataquarantine.streaming.kafka_consumer import KafkaMessageConsumer
 from dataquarantine.streaming.kafka_producer import KafkaMessageProducer
+from dataquarantine.api import app as fastapi_app
+from dataquarantine.core.database import SessionLocal
+from dataquarantine.core.models import QuarantineRecord
+import uvicorn
+import datetime
 
 
 class DataQuarantineApp:
@@ -46,6 +51,7 @@ class DataQuarantineApp:
         self.producer: Optional[KafkaMessageProducer] = None
         self.validator_engine: Optional[ValidatorEngine] = None
         self.schema_registry: Optional[SchemaRegistry] = None
+        self.api_server: Optional[uvicorn.Server] = None
         
         self.running = False
         self.shutdown_event = asyncio.Event()
@@ -97,6 +103,15 @@ class DataQuarantineApp:
                 validators=validators,
                 enable_auto_remediation=settings.enable_auto_remediation
             )
+            
+            # 6. Initialize API Server
+            config = uvicorn.Config(
+                fastapi_app, 
+                host="0.0.0.0", 
+                port=settings.api_port if hasattr(settings, 'api_port') else 8080,
+                log_level="info"
+            )
+            self.api_server = uvicorn.Server(config)
             
             logger.info("✅ All components initialized successfully")
             
@@ -192,8 +207,25 @@ class DataQuarantineApp:
                                 f"{outcome.error_type} - {outcome.error_message}"
                             )
                             
-                            # TODO: Store in MinIO and PostgreSQL
-                            # await self.quarantine_manager.quarantine_record(...)
+                            # Store in PostgreSQL
+                            try:
+                                with SessionLocal() as db:
+                                    record = QuarantineRecord(
+                                        topic=topic,
+                                        partition=partition,
+                                        offset=offset,
+                                        timestamp=datetime.datetime.fromtimestamp(message.get('timestamp', time.time()/1000)),
+                                        schema_name=schema_name,
+                                        schema_version="latest",
+                                        error_type=outcome.error_type or "unknown",
+                                        error_message=outcome.error_message or "Unknown validation error",
+                                        field_path=outcome.field_path,
+                                        storage_path=f"quarantine/{topic}/{offset}.json"
+                                    )
+                                    db.add(record)
+                                    db.commit()
+                            except Exception as db_err:
+                                logger.error(f"Failed to save to database: {db_err}")
                         else:
                             logger.error("Failed to send message to DLQ")
                             continue  # Don't commit offset
@@ -268,8 +300,14 @@ async def main():
         # Initialize
         await app.initialize()
         
+        # Start API server in a separate task
+        api_task = asyncio.create_task(app.api_server.serve())
+        
         # Run processing loop
         await app.process_messages()
+        
+        # Wait for API to stop
+        await api_task
         
     except KeyboardInterrupt:
         logger.info("Keyboard interrupt received")
