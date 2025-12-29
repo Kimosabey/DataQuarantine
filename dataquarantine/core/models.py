@@ -10,7 +10,7 @@ class QuarantineRecord(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     topic = Column(String, nullable=False)
     partition = Column(Integer, nullable=False)
-    offset = Column(BigInteger, nullable=False)
+    kafka_offset = Column(BigInteger, nullable=False)
     timestamp = Column(DateTime, nullable=False)
     schema_name = Column(String, nullable=False)
     schema_version = Column(String, nullable=False)

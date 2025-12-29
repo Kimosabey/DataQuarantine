@@ -214,7 +214,7 @@ class DataQuarantineApp:
                                     record = QuarantineRecord(
                                         topic=topic,
                                         partition=partition,
-                                        offset=offset,
+                                        kafka_offset=offset,
                                         timestamp=datetime.datetime.fromtimestamp(message.get('timestamp', time.time()/1000)),
                                         schema_name=schema_name,
                                         schema_version="latest",

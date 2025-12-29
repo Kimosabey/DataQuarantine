@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS quarantine_records (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     topic VARCHAR(255) NOT NULL,
     partition INTEGER NOT NULL,
-    offset BIGINT NOT NULL,
+    kafka_offset BIGINT NOT NULL,
     timestamp TIMESTAMP NOT NULL,
     schema_name VARCHAR(255) NOT NULL,
     schema_version VARCHAR(50) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS quarantine_records (
     updated_at TIMESTAMP DEFAULT NOW(),
     
     -- Unique constraint to prevent duplicates
-    UNIQUE(topic, partition, offset)
+    UNIQUE(topic, partition, kafka_offset)
 );
 
 -- Indexes for common queries

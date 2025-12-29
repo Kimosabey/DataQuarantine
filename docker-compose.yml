@@ -154,6 +154,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: dataquarantine-api
+    restart: on-failure
     ports:
       - "8080:8080"
     environment:
