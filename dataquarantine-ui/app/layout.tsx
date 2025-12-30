@@ -28,7 +28,7 @@ export default function RootLayout({
           {/* Sidebar */}
           <Sidebar />
 
-          <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+          <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden md:ml-64">
             {/* Header */}
             <Header />
 

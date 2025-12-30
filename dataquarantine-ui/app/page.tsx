@@ -1,28 +1,15 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Activity, CheckCircle, ShieldAlert, Zap, Server, Database, HardDrive, Cpu } from 'lucide-react'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { ErrorBreakdown } from '@/components/dashboard/error-breakdown'
 import { ValidationChart } from '@/components/dashboard/validation-chart'
 import { formatNumber } from '@/lib/utils'
+import { fetchMetrics, SystemMetrics } from '@/lib/api'
 
-// Mock data - will be replaced with real API calls
-const mockMetrics = {
-  total_processed: 1234567,
-  total_valid: 1222345,
-  total_invalid: 12222,
-  throughput: 10234,
-}
-
-const mockErrorBreakdown = {
-  'schema_violation': 5500,
-  'missing_field': 3600,
-  'invalid_format': 1800,
-  'timeout': 1200,
-  'type_mismatch': 122,
-}
-
+// Mock chart data - Backend does not yet support time-series history
 const mockChartData = Array.from({ length: 24 }, (_, i) => ({
   time: `${i}:00`,
   valid: Math.floor(Math.random() * 5000) + 3000,
@@ -30,8 +17,36 @@ const mockChartData = Array.from({ length: 24 }, (_, i) => ({
 }))
 
 export default function DashboardPage() {
-  const validPercentage = ((mockMetrics.total_valid / mockMetrics.total_processed) * 100).toFixed(2)
-  const invalidPercentage = ((mockMetrics.total_invalid / mockMetrics.total_processed) * 100).toFixed(2)
+  const [metrics, setMetrics] = useState<SystemMetrics | null>(null)
+
+  useEffect(() => {
+    // Initial fetch
+    fetchMetrics().then(setMetrics).catch(console.error)
+
+    // Poll every 5 seconds
+    const interval = setInterval(() => {
+      fetchMetrics().then(setMetrics).catch(console.error)
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const data = metrics || {
+    total_processed: 0,
+    total_valid: 0,
+    total_invalid: 0,
+    validation_rate: 0,
+    throughput: 0,
+    error_breakdown: { 'system_initializing': 1 }
+  }
+
+  const validPercentage = data.total_processed > 0
+    ? ((data.total_valid / data.total_processed) * 100).toFixed(2)
+    : "0.00"
+
+  const invalidPercentage = data.total_processed > 0
+    ? ((data.total_invalid / data.total_processed) * 100).toFixed(2)
+    : "0.00"
 
   return (
     <div className="space-y-8 pb-10">
@@ -58,7 +73,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
           title="Total Processed"
-          value={formatNumber(mockMetrics.total_processed)}
+          value={formatNumber(data.total_processed)}
           change={12.5}
           trend="up"
           icon={<Activity className="w-5 h-5" />}
@@ -69,7 +84,7 @@ export default function DashboardPage() {
 
         <StatCard
           title="Valid Records"
-          value={formatNumber(mockMetrics.total_valid)}
+          value={formatNumber(data.total_valid)}
           change={8.3}
           trend="up"
           icon={<CheckCircle className="w-5 h-5" />}
@@ -80,7 +95,7 @@ export default function DashboardPage() {
 
         <StatCard
           title="Quarantined"
-          value={formatNumber(mockMetrics.total_invalid)}
+          value={formatNumber(data.total_invalid)}
           change={-2.1}
           trend="down"
           icon={<ShieldAlert className="w-5 h-5" />}
@@ -91,7 +106,7 @@ export default function DashboardPage() {
 
         <StatCard
           title="Throughput"
-          value={`${formatNumber(mockMetrics.throughput)}/s`}
+          value={`${formatNumber(data.throughput)}/s`}
           change={15.7}
           trend="up"
           icon={<Zap className="w-5 h-5" />}
@@ -162,7 +177,7 @@ export default function DashboardPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            <ErrorBreakdown data={mockErrorBreakdown} />
+            <ErrorBreakdown data={data.error_breakdown} />
           </motion.div>
 
           {/* System Status */}

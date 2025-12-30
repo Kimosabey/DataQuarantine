@@ -18,8 +18,6 @@ const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'Quarantine', href: '/quarantine', icon: ShieldAlert },
     { name: 'Live Monitor', href: '/monitor', icon: Activity },
-    { name: 'Schemas', href: '/schemas', icon: Database },
-    { name: 'System', href: '/system', icon: Cpu },
     { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
