@@ -4,56 +4,71 @@ import { Save } from 'lucide-react'
 
 export default function SettingsPage() {
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
-            <div className="border-b border-border pb-6">
-                <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
-                <p className="text-muted-foreground mt-1">Manage system configuration and preferences.</p>
+        <div className="max-w-5xl mx-auto space-y-10 pb-10">
+            <div className="flex items-end justify-between">
+                <div>
+                    <h1 className="text-4xl font-black tracking-tight text-foreground mb-1">Settings</h1>
+                    <p className="text-muted-foreground font-medium">Manage system configuration and preferences.</p>
+                </div>
             </div>
 
-            <div className="space-y-6">
-                <div className="bg-card border border-border rounded-xl shadow-sm p-6">
-                    <h2 className="text-lg font-semibold mb-4">General Preferences</h2>
+            <div className="grid gap-8">
+                {/* General Preferences */}
+                <div className="neu-flat rounded-[2.5rem] p-8">
+                    <h2 className="text-lg font-bold text-foreground mb-6 uppercase tracking-wider">General Preferences</h2>
                     <div className="grid gap-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <label className="text-sm font-medium text-foreground">Dark Mode</label>
-                                <p className="text-xs text-muted-foreground">Toggle system visual theme</p>
+                        <div className="flex items-center justify-between p-4 rounded-3xl neu-pressed">
+                            <div className="pl-2">
+                                <label className="text-base font-bold text-foreground">Dark Mode</label>
+                                <p className="text-sm font-medium text-muted-foreground mt-0.5">Toggle system visual theme</p>
                             </div>
-                            <div className="h-6 w-11 rounded-full bg-secondary border border-border relative cursor-not-allowed">
-                                <div className="absolute top-1 left-1 h-4 w-4 rounded-full bg-muted-foreground/30"></div>
+                            <div className="h-8 w-14 rounded-full neu-flat relative cursor-not-allowed opacity-60">
+                                <div className="absolute top-1 left-1 h-6 w-6 rounded-full bg-muted-foreground/30 shadow-inner"></div>
                             </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <label className="text-sm font-medium text-foreground">Notifications</label>
-                                <p className="text-xs text-muted-foreground">Receive alerts for validation errors</p>
+
+                        <div className="flex items-center justify-between p-4 rounded-3xl neu-pressed">
+                            <div className="pl-2">
+                                <label className="text-base font-bold text-foreground">Notifications</label>
+                                <p className="text-sm font-medium text-muted-foreground mt-0.5">Receive alerts for validation errors</p>
                             </div>
-                            <div className="h-6 w-11 rounded-full bg-primary relative cursor-pointer">
-                                <div className="absolute top-1 right-1 h-4 w-4 rounded-full bg-white shadow"></div>
+                            <div className="h-8 w-14 rounded-full bg-primary/10 relative cursor-pointer shadow-inner inset-shadow">
+                                <div className="absolute top-1 right-1 h-6 w-6 rounded-full bg-primary shadow-lg shadow-primary/40 transform scale-110"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-card border border-border rounded-xl shadow-sm p-6">
-                    <h2 className="text-lg font-semibold mb-4">Kafka Configuration</h2>
-                    <div className="grid gap-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="text-sm font-medium text-muted-foreground mb-1 block">Bootstrap Servers</label>
-                                <input type="text" value="dataquarantine-kafka:9092" disabled className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-transparent text-sm" />
+                {/* Kafka Config */}
+                <div className="neu-flat rounded-[2.5rem] p-8">
+                    <h2 className="text-lg font-bold text-foreground mb-6 uppercase tracking-wider">Kafka Configuration</h2>
+                    <div className="grid gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-muted-foreground ml-2">Bootstrap Servers</label>
+                                <input
+                                    type="text"
+                                    value="dataquarantine-kafka:9092"
+                                    disabled
+                                    className="w-full px-5 py-3.5 rounded-2xl neu-pressed text-sm font-bold text-foreground bg-transparent border-none opacity-70"
+                                />
                             </div>
-                            <div>
-                                <label className="text-sm font-medium text-muted-foreground mb-1 block">Consumer Group</label>
-                                <input type="text" value="validator-group-01" disabled className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-transparent text-sm" />
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-muted-foreground ml-2">Consumer Group</label>
+                                <input
+                                    type="text"
+                                    value="validator-group-01"
+                                    disabled
+                                    className="w-full px-5 py-3.5 rounded-2xl neu-pressed text-sm font-bold text-foreground bg-transparent border-none opacity-70"
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex justify-end">
-                    <button className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 font-medium transition-colors shadow-lg shadow-primary/20">
-                        <Save className="w-4 h-4" />
+                <div className="flex justify-end pt-4">
+                    <button className="flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-2xl hover:scale-105 active:scale-95 font-bold text-lg shadow-xl shadow-primary/30 transition-all">
+                        <Save className="w-5 h-5" />
                         Save Changes
                     </button>
                 </div>
