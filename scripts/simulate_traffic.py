@@ -20,15 +20,11 @@ def create_valid_event():
     """Generates a perfectly valid event matching the schema."""
     return {
         "_schema": "user_event",
-        "event_id": str(uuid.uuid4()),
-        "event_type": random.choice(["login", "logout", "purchase", "page_view"]),
+        "event_type": random.choice(["view", "click", "purchase", "add_to_cart", "remove_from_cart"]),
         "user_id": f"USER{random.randint(100000, 999999)}",  # 6 digits
-        "timestamp": datetime.now().isoformat(),
-        "payload": {
-            "browser": random.choice(["Chrome", "Firefox", "Safari", "Edge"]),
-            "os": random.choice(["Windows", "macOS", "Linux", "iOS", "Android"]),
-            "duration": random.randint(1, 100)
-        }
+        "timestamp": datetime.now().isoformat() + "Z",
+        "product_id": f"PROD{random.randint(100, 999)}",
+        "session_id": f"sess_{uuid.uuid4().hex[:8]}"
     }
 
 def create_invalid_event():
@@ -68,8 +64,8 @@ def create_invalid_event():
         del event["_schema"]
     
     elif error_type == "invalid_event_type":
-        # Invalid event type
-        event["event_type"] = "INVALID_TYPE_NOT_IN_ENUM"
+        # Invalid event type (not in enum)
+        event["event_type"] = random.choice(["login", "logout", "signup", "invalid_action"])
     
     elif error_type == "future_timestamp":
         # Timestamp in the future (business rule violation)

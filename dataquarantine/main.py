@@ -15,7 +15,10 @@ import asyncio
 import signal
 import sys
 import logging
+import json
 from typing import Optional
+from minio import Minio
+from minio.error import S3Error
 
 from dataquarantine.config.settings import settings
 from dataquarantine.config.logging_config import logger
@@ -34,6 +37,7 @@ from dataquarantine.core.models import QuarantineRecord
 import uvicorn
 import datetime
 import time
+import io
 
 
 class DataQuarantineApp:
@@ -182,6 +186,38 @@ class DataQuarantineApp:
                             logger.debug(
                                 f"✅ Valid message routed to {settings.kafka_valid_topic}"
                             )
+                            
+                            # Store valid message in MinIO
+                            storage_path = f"validated/{topic}/{partition}/{offset}.json"
+                            try:
+                                # Initialize MinIO client
+                                minio_client = Minio(
+                                    settings.minio_endpoint.replace('http://', '').replace('https://', ''),
+                                    access_key=settings.minio_access_key,
+                                    secret_key=settings.minio_secret_key,
+                                    secure=False
+                                )
+                                
+                                # Ensure bucket exists
+                                bucket_name = "validated-data"
+                                if not minio_client.bucket_exists(bucket_name):
+                                    minio_client.make_bucket(bucket_name)
+                                
+                                # Save file to MinIO
+                                file_content = json.dumps(payload, indent=2)
+                                file_bytes = file_content.encode('utf-8')
+                                file_stream = io.BytesIO(file_bytes)
+                                
+                                minio_client.put_object(
+                                    bucket_name,
+                                    storage_path,
+                                    file_stream,
+                                    length=len(file_bytes),
+                                    content_type='application/json'
+                                )
+                                logger.info(f"✅ Saved valid to MinIO: {storage_path}")
+                            except Exception as minio_err:
+                                logger.error(f"Failed to save valid message to MinIO: {minio_err}")
                         else:
                             logger.error("Failed to send valid message")
                             continue  # Don't commit offset
@@ -208,6 +244,38 @@ class DataQuarantineApp:
                                 f"{outcome.error_type} - {outcome.error_message}"
                             )
                             
+                            # Store in MinIO
+                            storage_path = f"quarantine/{topic}/{partition}/{offset}.json"
+                            try:
+                                # Initialize MinIO client
+                                minio_client = Minio(
+                                    settings.minio_endpoint.replace('http://', '').replace('https://', ''),
+                                    access_key=settings.minio_access_key,
+                                    secret_key=settings.minio_secret_key,
+                                    secure=False
+                                )
+                                
+                                # Ensure bucket exists
+                                bucket_name = "data-quarantine"
+                                if not minio_client.bucket_exists(bucket_name):
+                                    minio_client.make_bucket(bucket_name)
+                                
+                                # Save file to MinIO
+                                file_content = json.dumps(dlq_payload, indent=2)
+                                file_bytes = file_content.encode('utf-8')
+                                file_stream = io.BytesIO(file_bytes)
+                                
+                                minio_client.put_object(
+                                    bucket_name,
+                                    storage_path,
+                                    file_stream,
+                                    length=len(file_bytes),
+                                    content_type='application/json'
+                                )
+                                logger.info(f"✅ Saved to MinIO: {storage_path}")
+                            except Exception as minio_err:
+                                logger.error(f"Failed to save to MinIO: {minio_err}")
+                            
                             # Store in PostgreSQL
                             try:
                                 with SessionLocal() as db:
@@ -215,16 +283,17 @@ class DataQuarantineApp:
                                         topic=topic,
                                         partition=partition,
                                         kafka_offset=offset,
-                                        timestamp=datetime.datetime.fromtimestamp(message.get('timestamp', time.time()/1000)),
+                                        timestamp=datetime.datetime.fromtimestamp(message.get('timestamp', time.time())/1000),
                                         schema_name=schema_name,
                                         schema_version="latest",
                                         error_type=outcome.error_type or "unknown",
                                         error_message=outcome.error_message or "Unknown validation error",
                                         field_path=outcome.field_path,
-                                        storage_path=f"quarantine/{topic}/{offset}.json"
+                                        storage_path=storage_path
                                     )
                                     db.add(record)
                                     db.commit()
+                                    logger.info(f"✅ Saved to PostgreSQL: record_id={record.id}")
                             except Exception as db_err:
                                 logger.error(f"Failed to save to database: {db_err}")
                         else:
