@@ -2,7 +2,20 @@
 
 import { Save } from 'lucide-react'
 
+import { useTheme } from 'next-themes'
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+
 export default function SettingsPage() {
+    const { theme, setTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+    useEffect(() => setMounted(true), [])
+
+    // Prevent hydration mismatch
+    if (!mounted) return null;
+
+    const isDark = theme === 'dark'
+
     return (
         <div className="max-w-5xl mx-auto space-y-10 pb-10">
             <div className="flex items-end justify-between">
@@ -22,8 +35,15 @@ export default function SettingsPage() {
                                 <label className="text-base font-bold text-foreground">Dark Mode</label>
                                 <p className="text-sm font-medium text-muted-foreground mt-0.5">Toggle system visual theme</p>
                             </div>
-                            <div className="h-8 w-14 rounded-full neu-flat relative cursor-not-allowed opacity-60">
-                                <div className="absolute top-1 left-1 h-6 w-6 rounded-full bg-muted-foreground/30 shadow-inner"></div>
+                            <div
+                                className={`h-8 w-14 rounded-full relative cursor-pointer transition-colors duration-300 ${isDark ? 'bg-primary' : 'bg-muted-foreground/20'}`}
+                                onClick={() => setTheme(isDark ? 'light' : 'dark')}
+                            >
+                                <motion.div
+                                    initial={false}
+                                    animate={{ x: isDark ? 24 : 4 }}
+                                    className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-md"
+                                />
                             </div>
                         </div>
 

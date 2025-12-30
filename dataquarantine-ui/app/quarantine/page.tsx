@@ -152,7 +152,7 @@ export default function QuarantinePage() {
                                         <td className="px-8 py-5 text-sm text-foreground max-w-xs truncate font-medium">
                                             {record.error_message}
                                         </td>
-                                        <td className="px-8 py-5 text-sm text-muted-foreground font-medium">
+                                        <td className="px-8 py-5 text-sm text-muted-foreground font-medium" suppressHydrationWarning>
                                             {formatDistanceToNow(new Date(record.created_at), { addSuffix: true })}
                                         </td>
                                         <td className="px-8 py-5">

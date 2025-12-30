@@ -28,7 +28,7 @@ export function Sidebar() {
         <motion.div
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border hidden md:flex flex-col z-50 shadow-sm"
+            className="fixed left-0 top-0 h-screen w-64 bg-card border-r-2 border-slate-200 hidden md:flex flex-col z-50 shadow-sm"
         >
             {/* Logo Area */}
             <div className="p-6 pb-8">
@@ -41,7 +41,7 @@ export function Sidebar() {
                             DataQuarantine
                         </span>
                         <span className="text-[10px] uppercase tracking-wider font-extrabold text-primary mt-1">
-                            Soft UI Edition
+                            Streaming Validation
                         </span>
                     </div>
                 </Link>
