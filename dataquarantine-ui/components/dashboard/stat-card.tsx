@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowUp, ArrowDown } from 'lucide-react'
+import { ArrowUp, ArrowDown, Minus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface StatCardProps {
@@ -9,8 +9,9 @@ interface StatCardProps {
     value: string | number
     change?: number
     icon: React.ReactNode
-    trend?: 'up' | 'down'
-    gradient?: string
+    trend?: 'up' | 'down' | 'neutral'
+    colorClass?: string  // e.g. text-blue-600
+    bgClass?: string     // e.g. bg-blue-100
     delay?: number
 }
 
@@ -20,7 +21,8 @@ export function StatCard({
     change,
     icon,
     trend,
-    gradient = 'from-blue-500 to-purple-600',
+    colorClass = "text-primary",
+    bgClass = "bg-primary/10",
     delay = 0,
 }: StatCardProps) {
     return (
@@ -28,55 +30,39 @@ export function StatCard({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay }}
-            className="relative overflow-hidden rounded-xl glass-dark p-6 hover:scale-105 transition-transform duration-300"
+            className="group relative overflow-hidden rounded-2xl bg-card border border-border shadow-sm p-6 hover:shadow-md transition-all duration-300"
         >
-            {/* Gradient background */}
-            <div className={cn('absolute inset-0 bg-gradient-to-br opacity-10', gradient)} />
-
-            {/* Content */}
-            <div className="relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                    <p className="text-sm font-medium text-muted-foreground">{title}</p>
-                    <div className={cn('p-2 rounded-lg bg-gradient-to-br', gradient)}>
-                        {icon}
-                    </div>
+            <div className="flex items-start justify-between">
+                <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">{title}</h3>
+                    <motion.div
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.4, delay: delay + 0.1 }}
+                        className="text-3xl font-bold text-foreground tracking-tight"
+                    >
+                        {value}
+                    </motion.div>
                 </div>
-
-                <div className="flex items-end justify-between">
-                    <div>
-                        <motion.h3
-                            initial={{ scale: 0.5 }}
-                            animate={{ scale: 1 }}
-                            transition={{ duration: 0.5, delay: delay + 0.2 }}
-                            className="text-3xl font-bold text-foreground"
-                        >
-                            {value}
-                        </motion.h3>
-
-                        {change !== undefined && (
-                            <motion.div
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.3, delay: delay + 0.4 }}
-                                className={cn(
-                                    'flex items-center gap-1 mt-2 text-sm font-medium',
-                                    trend === 'up' ? 'text-green-500' : 'text-red-500'
-                                )}
-                            >
-                                {trend === 'up' ? (
-                                    <ArrowUp className="w-4 h-4" />
-                                ) : (
-                                    <ArrowDown className="w-4 h-4" />
-                                )}
-                                <span>{Math.abs(change)}%</span>
-                            </motion.div>
-                        )}
-                    </div>
+                <div className={cn("p-3 rounded-xl transition-transform group-hover:scale-110 duration-500", bgClass, colorClass)}>
+                    {icon}
                 </div>
             </div>
 
-            {/* Glow effect */}
-            <div className={cn('absolute -bottom-2 -right-2 w-24 h-24 rounded-full blur-2xl opacity-20 bg-gradient-to-br', gradient)} />
+            <div className="mt-4 flex items-center gap-2">
+                {change !== undefined && (
+                    <div className={cn(
+                        "flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full",
+                        trend === 'up' ? "text-green-600 bg-green-100" :
+                            trend === 'down' ? "text-red-600 bg-red-100" : "text-gray-600 bg-gray-100"
+                    )}>
+                        {trend === 'up' ? <ArrowUp className="w-3 h-3" /> :
+                            trend === 'down' ? <ArrowDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
+                        <span>{Math.abs(change)}%</span>
+                    </div>
+                )}
+                <span className="text-xs text-muted-foreground">vs last hour</span>
+            </div>
         </motion.div>
     )
 }

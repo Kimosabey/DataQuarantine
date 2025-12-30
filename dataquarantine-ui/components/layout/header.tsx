@@ -1,52 +1,46 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Bell, Search, User } from 'lucide-react'
+import { Bell, Search, Command, HelpCircle } from 'lucide-react'
 
 export function Header() {
     return (
-        <motion.header
-            initial={{ y: -100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="fixed top-0 right-0 left-0 md:left-64 h-16 glass-dark border-b border-white/10 px-4 md:px-8 flex items-center justify-between z-40 transition-all duration-300"
-        >
-            {/* Search */}
-            <div className="flex-1 max-w-xl">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <input
-                        type="text"
-                        placeholder="Search records, schemas..."
-                        className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                    />
+        <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md border-b border-border/50">
+            <div className="flex h-16 items-center gap-4 px-6 md:px-8">
+
+                {/* Search Bar - Modern "Command" style */}
+                <div className="flex-1 flex justify-center md:justify-start">
+                    <div className="relative group w-full max-w-md">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                            <Search className="w-4 h-4" />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search events, schemas, logs..."
+                            className="w-full h-10 pl-10 pr-12 bg-secondary/50 border-none rounded-full text-sm focus:bg-background focus:ring-2 focus:ring-primary/20 transition-all font-medium placeholder:text-muted-foreground/70"
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                                <span className="text-xs">⌘</span>K
+                            </kbd>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Actions */}
+                <div className="flex items-center gap-3">
+                    <button className="p-2 rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+                        <HelpCircle className="w-5 h-5" />
+                    </button>
+
+                    <button className="relative p-2 rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors group">
+                        <Bell className="w-5 h-5 group-hover:animate-swing" />
+                        <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-background"></span>
+                    </button>
+
+                    <div className="h-8 w-[1px] bg-border mx-1 hidden md:block"></div>
                 </div>
             </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-4">
-                {/* Notifications */}
-                <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="relative p-2 rounded-lg hover:bg-white/5 transition-colors"
-                >
-                    <Bell className="w-5 h-5 text-muted-foreground" />
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-                </motion.button>
-
-                {/* User */}
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors"
-                >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                        <User className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-foreground">Admin</span>
-                </motion.button>
-            </div>
-        </motion.header>
+        </header>
     )
 }

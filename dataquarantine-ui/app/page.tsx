@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Activity, CheckCircle, XCircle, TrendingUp } from 'lucide-react'
+import { Activity, CheckCircle, ShieldAlert, Zap, Server, Database, HardDrive, Cpu } from 'lucide-react'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { ErrorBreakdown } from '@/components/dashboard/error-breakdown'
 import { ValidationChart } from '@/components/dashboard/validation-chart'
@@ -34,26 +34,36 @@ export default function DashboardPage() {
   const invalidPercentage = ((mockMetrics.total_invalid / mockMetrics.total_processed) * 100).toFixed(2)
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-10">
       {/* Page header */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className="flex items-end justify-between"
       >
-        <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Real-time validation metrics and system health</p>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-1">Overview</h1>
+          <p className="text-muted-foreground font-medium">System performance and data validation metrics.</p>
+        </div>
+        <div className="flex gap-2">
+          <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            System Live
+          </span>
+        </div>
       </motion.div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
           title="Total Processed"
           value={formatNumber(mockMetrics.total_processed)}
           change={12.5}
           trend="up"
-          icon={<Activity className="w-5 h-5 text-white" />}
-          gradient="from-blue-500 to-cyan-500"
+          icon={<Activity className="w-5 h-5" />}
+          colorClass="text-blue-600"
+          bgClass="bg-blue-50"
           delay={0}
         />
 
@@ -62,8 +72,9 @@ export default function DashboardPage() {
           value={formatNumber(mockMetrics.total_valid)}
           change={8.3}
           trend="up"
-          icon={<CheckCircle className="w-5 h-5 text-white" />}
-          gradient="from-green-500 to-emerald-500"
+          icon={<CheckCircle className="w-5 h-5" />}
+          colorClass="text-emerald-600"
+          bgClass="bg-emerald-50"
           delay={0.1}
         />
 
@@ -72,8 +83,9 @@ export default function DashboardPage() {
           value={formatNumber(mockMetrics.total_invalid)}
           change={-2.1}
           trend="down"
-          icon={<XCircle className="w-5 h-5 text-white" />}
-          gradient="from-red-500 to-rose-500"
+          icon={<ShieldAlert className="w-5 h-5" />}
+          colorClass="text-rose-600"
+          bgClass="bg-rose-50"
           delay={0.2}
         />
 
@@ -82,95 +94,119 @@ export default function DashboardPage() {
           value={`${formatNumber(mockMetrics.throughput)}/s`}
           change={15.7}
           trend="up"
-          icon={<TrendingUp className="w-5 h-5 text-white" />}
-          gradient="from-purple-500 to-pink-500"
+          icon={<Zap className="w-5 h-5" />}
+          colorClass="text-violet-600"
+          bgClass="bg-violet-50"
           delay={0.3}
         />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <ValidationChart data={mockChartData} />
+        <div className="lg:col-span-2 space-y-6">
+          {/* Main Validation Chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="rounded-2xl border border-border bg-card shadow-sm p-1"
+          >
+            <ValidationChart data={mockChartData} />
+          </motion.div>
+
+          {/* Progress Bars */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="rounded-2xl border border-border bg-card shadow-sm p-6"
+          >
+            <h3 className="text-base font-semibold text-foreground mb-5">Validation Health</h3>
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-muted-foreground">Valid Messages</span>
+                  <span className="text-sm font-bold text-emerald-600">{validPercentage}%</span>
+                </div>
+                <div className="h-2.5 bg-secondary rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${validPercentage}%` }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                    className="h-full bg-emerald-500 rounded-full"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-muted-foreground">Quarantined Messages</span>
+                  <span className="text-sm font-bold text-rose-600">{invalidPercentage}%</span>
+                </div>
+                <div className="h-2.5 bg-secondary rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${invalidPercentage}%` }}
+                    transition={{ duration: 1, delay: 0.6 }}
+                    className="h-full bg-rose-500 rounded-full"
+                  />
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
-        <div>
-          <ErrorBreakdown data={mockErrorBreakdown} />
+        <div className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <ErrorBreakdown data={mockErrorBreakdown} />
+          </motion.div>
+
+          {/* System Status */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+            className="rounded-2xl border border-border bg-card shadow-sm p-6"
+          >
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-base font-semibold text-foreground">System Status</h3>
+              <div className="px-2 py-0.5 rounded text-[10px] font-bold bg-secondary text-muted-foreground uppercase">Real-time</div>
+            </div>
+
+            <div className="space-y-3">
+              {[
+                { name: 'Kafka Consumer', status: 'healthy', icon: Server, color: "text-orange-500" },
+                { name: 'Schema Registry', status: 'healthy', icon: Database, color: "text-blue-500" },
+                { name: 'PostgreSQL', status: 'healthy', icon: HardDrive, color: "text-indigo-500" },
+                { name: 'MinIO Storage', status: 'healthy', icon: Cpu, color: "text-red-500" },
+              ].map((service, index) => (
+                <div
+                  key={service.name}
+                  className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/50 hover:bg-secondary/60 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`p-1.5 rounded-lg bg-card ${service.color} shadow-sm`}>
+                      <service.icon className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-sm font-medium text-foreground">{service.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-green-500/10 border border-green-500/20">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    <span className="text-[10px] font-bold text-green-700 uppercase tracking-wide">Operational</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
-
-      {/* Additional info */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        <div className="glass-dark rounded-xl p-6">
-          <h3 className="text-lg font-semibold mb-4 text-foreground">Validation Success Rate</h3>
-          <div className="space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">Valid</span>
-                <span className="text-sm font-semibold text-green-500">{validPercentage}%</span>
-              </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${validPercentage}%` }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                  className="h-full bg-gradient-to-r from-green-500 to-emerald-500"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">Invalid</span>
-                <span className="text-sm font-semibold text-red-500">{invalidPercentage}%</span>
-              </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${invalidPercentage}%` }}
-                  transition={{ duration: 1, delay: 0.6 }}
-                  className="h-full bg-gradient-to-r from-red-500 to-rose-500"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="glass-dark rounded-xl p-6">
-          <h3 className="text-lg font-semibold mb-4 text-foreground">System Status</h3>
-          <div className="space-y-3">
-            {[
-              { name: 'Kafka Consumer', status: 'healthy' },
-              { name: 'Schema Registry', status: 'healthy' },
-              { name: 'PostgreSQL', status: 'healthy' },
-              { name: 'MinIO Storage', status: 'healthy' },
-            ].map((service, index) => (
-              <motion.div
-                key={service.name}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.7 + index * 0.1 }}
-                className="flex items-center justify-between p-3 rounded-lg bg-white/5"
-              >
-                <span className="text-sm text-foreground">{service.name}</span>
-                <div className="flex items-center gap-2">
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
-                    className="w-2 h-2 rounded-full bg-green-500"
-                  />
-                  <span className="text-xs text-green-500 font-medium">Healthy</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
     </div>
   )
 }

@@ -3,14 +3,23 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { LayoutDashboard, AlertTriangle, Activity, Settings, Database } from 'lucide-react'
+import {
+    LayoutDashboard,
+    ShieldAlert,
+    Activity,
+    Database,
+    Settings,
+    ShieldCheck,
+    Cpu
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Quarantine', href: '/quarantine', icon: AlertTriangle },
+    { name: 'Quarantine', href: '/quarantine', icon: ShieldAlert },
     { name: 'Live Monitor', href: '/monitor', icon: Activity },
     { name: 'Schemas', href: '/schemas', icon: Database },
+    { name: 'System', href: '/system', icon: Cpu },
     { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
@@ -19,78 +28,75 @@ export function Sidebar() {
 
     return (
         <motion.div
-            initial={{ x: -100, opacity: 0 }}
+            initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="fixed left-0 top-0 h-screen w-64 glass-dark border-r border-white/10 p-6 hidden md:block z-50"
+            className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border hidden md:flex flex-col z-50 shadow-sm"
         >
-            {/* Logo */}
-            <div className="mb-8">
-                <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="flex items-center gap-3"
-                >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center glow-primary">
-                        <span className="text-xl font-bold text-white">DQ</span>
+            {/* Logo Area */}
+            <div className="p-6 pb-8 border-b border-border/40">
+                <Link href="/" className="flex items-center gap-3 group">
+                    <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition-transform group-hover:scale-105">
+                        <ShieldCheck className="w-6 h-6" strokeWidth={2.5} />
                     </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-foreground">DataQuarantine</h1>
-                        <p className="text-xs text-muted-foreground">Schema Enforcer</p>
+                    <div className="flex flex-col">
+                        <span className="font-bold text-lg tracking-tight text-foreground leading-none">
+                            DataQuarantine
+                        </span>
+                        <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mt-1">
+                            Schema Enforcer
+                        </span>
                     </div>
-                </motion.div>
+                </Link>
             </div>
 
             {/* Navigation */}
-            <nav className="space-y-2">
-                {navigation.map((item, index) => {
+            <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+                {navigation.map((item) => {
                     const isActive = pathname === item.href
                     const Icon = item.icon
 
                     return (
-                        <motion.div
+                        <Link
                             key={item.name}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
+                            href={item.href}
+                            className={cn(
+                                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative',
+                                isActive
+                                    ? 'text-primary bg-primary/10'
+                                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                            )}
                         >
-                            <Link
-                                href={item.href}
-                                className={cn(
-                                    'flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
-                                    isActive
-                                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white glow-primary'
-                                        : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
-                                )}
-                            >
-                                <Icon className="w-5 h-5" />
-                                <span className="font-medium">{item.name}</span>
-                            </Link>
-                        </motion.div>
+                            {isActive && (
+                                <motion.div
+                                    layoutId="sidebar-active"
+                                    className="absolute left-0 w-1 h-6 bg-primary rounded-r-full"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.2 }}
+                                />
+                            )}
+                            <Icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground")} />
+                            <span>{item.name}</span>
+                        </Link>
                     )
                 })}
             </nav>
 
-            {/* Status indicator */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.8 }}
-                className="absolute bottom-6 left-6 right-6"
-            >
-                <div className="glass p-4 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                        <motion.div
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                            className="w-2 h-2 rounded-full bg-green-500"
-                        />
-                        <span className="text-sm font-medium text-foreground">System Online</span>
+            {/* User / Status */}
+            <div className="p-4 border-t border-border/40">
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary/50 border border-border/50">
+                    <div className="relative">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                            AD
+                        </div>
+                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
                     </div>
-                    <p className="text-xs text-muted-foreground">All services operational</p>
+                    <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-foreground">Admin User</span>
+                        <span className="text-xs text-muted-foreground">Connected</span>
+                    </div>
                 </div>
-            </motion.div>
+            </div>
         </motion.div>
     )
 }

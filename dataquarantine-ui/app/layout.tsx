@@ -4,11 +4,15 @@ import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "DataQuarantine - Streaming Schema Enforcer",
-  description: "Production-grade streaming schema validation and data quality monitoring",
+  title: "DataQuarantine | Modern Validated Streams",
+  description: "Real-time data validation and quarantine system.",
 };
 
 export default function RootLayout({
@@ -17,14 +21,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <html lang="en">
+      <body className={`${inter.variable} font-sans antialiased bg-background text-foreground min-h-screen`}>
+        {/* Main Application Wrapper */}
+        <div className="flex h-screen overflow-hidden bg-background">
+          {/* Sidebar */}
           <Sidebar />
-          <Header />
-          <main className="md:ml-64 ml-0 mt-16 p-6 md:p-8 transition-all duration-300">
-            {children}
-          </main>
+
+          <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            {/* Header */}
+            <Header />
+
+            {/* Main Content */}
+            <main className="w-full flex-grow p-6 md:p-8 lg:p-10 transition-all duration-300">
+              <div className="mx-auto w-full max-w-7xl animate-fade-in">
+                {children}
+              </div>
+            </main>
+          </div>
         </div>
       </body>
     </html>
