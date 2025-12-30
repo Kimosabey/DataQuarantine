@@ -40,82 +40,87 @@ export default function MonitorPage() {
     }, [isPlaying])
 
     return (
-        <div className="max-w-6xl mx-auto space-y-6 pb-12">
-            <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto space-y-8 pb-12">
+            <div className="flex items-end justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Live Monitor</h1>
-                    <p className="text-muted-foreground mt-1">Real-time event stream inspection</p>
+                    <h1 className="text-4xl font-black tracking-tight text-foreground">Live Monitor</h1>
+                    <p className="text-muted-foreground font-medium mt-1">Real-time event stream inspection</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-4">
                     <button
                         onClick={() => setIsPlaying(!isPlaying)}
-                        className={`px-4 py-2 rounded-xl flex items-center gap-2 font-medium transition-all ${isPlaying
-                                ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                                : 'bg-green-100 text-green-700 hover:bg-green-200'
-                            }`}
+                        className={`px-6 py-3 rounded-2xl neu-flat font-bold transition-all active:scale-95 flex items-center gap-2 ${isPlaying ? 'text-amber-600' : 'text-emerald-600'}`}
                     >
                         {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                        {isPlaying ? 'Pause Stream' : 'Resume Stream'}
+                        {isPlaying ? 'Pause' : 'Resume'}
                     </button>
-                    <button className="px-4 py-2 rounded-xl border border-border bg-card hover:bg-secondary text-foreground flex items-center gap-2 text-sm font-medium">
+
+                    <button className="px-5 py-3 rounded-2xl neu-flat hover:text-primary text-foreground flex items-center gap-2 text-sm font-bold transition-all">
                         <Filter className="w-4 h-4" />
                         Filters
                     </button>
                 </div>
             </div>
 
-            <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col h-[70vh]">
+            <div className="neu-flat rounded-[3rem] p-4 lg:p-6 h-[75vh] flex flex-col">
                 {/* Log Header */}
-                <div className="flex items-center justify-between px-6 py-3 bg-secondary/30 border-b border-border">
-                    <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
-                        <Terminal className="w-4 h-4" />
-                        <span>stream: raw-events</span>
+                <div className="flex items-center justify-between px-6 py-4 mb-2">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 neu-pressed rounded-full text-muted-foreground">
+                            <Terminal className="w-4 h-4" />
+                        </div>
+                        <span className="text-sm font-bold text-muted-foreground tracking-tight">stream: <span className="text-primary">raw-events</span></span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="flex h-2 w-2">
+                    <div className="flex items-center gap-3 px-4 py-2 neu-pressed rounded-xl">
+                        <span className="flex h-2.5 w-2.5">
                             <span className={`${isPlaying ? 'animate-ping' : ''} inline-flex h-full w-full rounded-full bg-green-400 opacity-75`}></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-green-400 to-emerald-600"></span>
                         </span>
-                        <span className="text-xs font-medium text-green-600 uppercase tracking-widest">{isPlaying ? 'Live' : 'Paused'}</span>
+                        <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest">{isPlaying ? 'Live' : 'Paused'}</span>
                     </div>
                 </div>
 
-                {/* Logs Stream */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-background/50 font-mono text-sm relative">
+                {/* Logs Stream (Sunken Screen) */}
+                <div className="flex-1 neu-pressed rounded-[2rem] p-4 md:p-6 overflow-y-auto space-y-3 relative">
                     <AnimatePresence initial={false}>
                         {logs.map((log) => (
                             <motion.div
                                 key={log.id}
                                 layout
-                                initial={{ opacity: 0, x: -20, height: 0 }}
-                                animate={{ opacity: 1, x: 0, height: 'auto' }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                                className={`p-3 rounded-lg border flex items-start gap-4 ${log.type === 'ERROR'
-                                        ? 'bg-rose-50/50 border-rose-100 dark:bg-rose-900/10 dark:border-rose-900/30'
-                                        : 'bg-card border-border'
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                className={`p-4 rounded-2xl flex items-start gap-4 ${log.type === 'ERROR'
+                                    ? 'bg-gradient-to-r from-rose-50 to-transparent border border-rose-100 shadow-sm'
+                                    : 'neu-convex'
                                     }`}
                             >
-                                <div className="mt-0.5">
+                                <div className="mt-1">
                                     {log.type === 'ERROR' ? (
-                                        <AlertOctagon className="w-4 h-4 text-rose-500" />
+                                        <div className="p-2 bg-rose-100 rounded-lg text-rose-600 shadow-sm">
+                                            <AlertOctagon className="w-4 h-4" />
+                                        </div>
                                     ) : (
-                                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                        <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600 shadow-sm">
+                                            <CheckCircle2 className="w-4 h-4" />
+                                        </div>
                                     )}
                                 </div>
                                 <div className="flex-1 space-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${log.type === 'ERROR' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wide ${log.type === 'ERROR' ? 'bg-rose-500 text-white' : 'bg-emerald-500 text-white'
                                             }`}>
                                             {log.type}
                                         </span>
-                                        <span className="text-xs text-muted-foreground">
-                                            {log.timestamp}
+                                        <span className="text-xs font-mono text-muted-foreground">
+                                            {log.timestamp.split('T')[1].replace('Z', '')}
                                         </span>
-                                        <span className="text-xs text-muted-foreground ml-auto">
-                                            partition-{log.metadata.partition} offset:{log.metadata.offset}
+                                        <span className="text-[10px] font-bold text-muted-foreground/60 ml-auto uppercase bg-background/50 px-2 py-1 rounded">
+                                            P-{log.metadata.partition} : OFF-{log.metadata.offset}
                                         </span>
                                     </div>
-                                    <p className={`text-sm ${log.type === 'ERROR' ? 'text-rose-900' : 'text-foreground'}`}>
+                                    <p className={`text-sm font-medium ${log.type === 'ERROR' ? 'text-rose-700' : 'text-foreground'}`}>
                                         {log.message}
                                     </p>
                                 </div>
@@ -124,9 +129,11 @@ export default function MonitorPage() {
                     </AnimatePresence>
 
                     {logs.length === 0 && (
-                        <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                            <Terminal className="w-12 h-12 mb-4 opacity-20" />
-                            <p>Waiting for incoming events...</p>
+                        <div className="flex flex-col items-center justify-center h-full text-muted-foreground/40 space-y-4">
+                            <div className="p-6 neu-convex rounded-full">
+                                <Terminal className="w-12 h-12 opacity-50" />
+                            </div>
+                            <p className="font-bold text-lg">Waiting for incoming events...</p>
                         </div>
                     )}
                 </div>
