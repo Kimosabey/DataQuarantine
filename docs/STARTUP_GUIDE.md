@@ -1,135 +1,87 @@
-# 🚀 DataQuarantine - Quick Start Guide
+# ⚡ DataQuarantine - 3-Minute Startup
 
-**Get everything running in 3 simple steps!**
+Ultra-quick reference for starting the system.
 
 ---
 
-## ✅ **Step 1: Start Backend Services (Docker)**
+## 🚀 Start Everything
 
-Open PowerShell and run:
-
-```powershell
-cd "G:\LearningRelated\Portfolio Project\DataQuarantine"
+```bash
+cd d:\01_Projects\Personal\POCs\DataQuarantine
 docker-compose up -d
 ```
 
-**Wait 30 seconds** for all services to initialize.
+---
 
-**Verify**:
-```powershell
-docker-compose ps
-# All services should show "Up" or "healthy"
+## ✅ Verify (30 seconds)
+
+```bash
+# Check all 8 containers are running
+docker ps
+
+# Should see: api, frontend, postgres, kafka, zookeeper, minio, prometheus, grafana
 ```
 
 ---
 
-## ✅ **Step 2: Start Frontend UI (Local Development)**
+## 🌐 Access Services
 
-In a **new terminal**:
-
-```powershell
-cd "G:\LearningRelated\Portfolio Project\DataQuarantine\dataquarantine-ui"
-npm run dev
-```
-
-**Expected Output**:
-```
-▲ Next.js 16.1.1 (Turbopack)
-- Local:        http://localhost:3000
-```
-
-**Access**: http://localhost:3000
-
-**Keep this terminal open!**
+| Service | URL | Login |
+|---------|-----|-------|
+| **Frontend** | http://localhost:3000 | None |
+| **API Docs** | http://localhost:8800/docs | None |
+| **Kafka UI** | http://localhost:8090 | None |
+| **Grafana** | http://localhost:3001 | admin / admin |
+| **MinIO** | http://localhost:9001 | minioadmin / minioadmin |
+| **Prometheus** | http://localhost:9090 | None |
 
 ---
 
-## ✅ **Step 3: Run Traffic Simulation**
+## 🛑 Stop Everything
 
-In a **third terminal**:
+```bash
+docker-compose down
+```
 
-```powershell
-# Navigate to project root
-cd "G:\LearningRelated\Portfolio Project\DataQuarantine"
+---
 
-# Start all Docker services (Rebuilds API to pick up latest fixes)
+## 🔄 Restart a Service
+
+```bash
+# Restart specific service
+docker-compose restart api
+
+# View logs
+docker logs -f dataquarantine-api
+```
+
+---
+
+## 🐛 Troubleshooting One-Liners
+
+```bash
+# Check all logs
+docker-compose logs
+
+# Check specific service logs
+docker logs dataquarantine-api
+
+# Rebuild and restart
 docker-compose up -d --build
 
-# Wait 30 seconds for services to start
-Start-Sleep -Seconds 30
-
-# Check status
-docker-compose ps
-```
-
-**Expected**: All services should show "Up" or "Up (healthy)"
-
----
-
-## ✅ **Step 4: Run Real-Time Simulation**
-
-To see the dashboard come alive with data:
-
-```powershell
-# Navigate to project root
-cd "G:\LearningRelated\Portfolio Project\DataQuarantine"
-
-# Install simulation library
-pip install kafka-python
-
-# Run the simulation script
-python scripts/simulate_traffic.py
-```
-
-**What this does**:
-- Generates 10 events per second.
-- Sends 80% Valid data and 20% Invalid data (missing fields, bad types).
-- Processes everything through Kafka and the DataQuarantine Engine.
-
----
-
-## ✅ **Step 5: Access All UIs**
-
-Open your browser and visit:
-
-### 🎨 **Next.js Dashboard** (MAIN UI)
-**URL**: http://localhost:3000
-
-**What you'll see**:
-- ✨ Animated stat cards with real-time scaling
-- 📊 Validation rate chart (responsive)
-- 🥧 Error breakdown pie chart (responsive labels)
-- 📱 Mobile-friendly layout
-
-### 🎯 **Kafka UI** (Kafka Management)
-**URL**: http://localhost:8090
-- Monitor `raw-events`, `validated-events`, and `quarantine-dlq` topics.
-
----
-
-## 🎬 **Demo Flow (For Interviews)**
-
-**"Let me show you how DataQuarantine handles high-velocity streams..."**
-
-1. **Start the Simulation**: "I'm launching a producer script that mimics a real-world high-traffic app."
-2. **Open Next.js Dashboard**: "Watch the metrics update live. The UI uses Glassmorphism and Framer Motion for a premium OS-like feel."
-3. **Show Mobile View**: "The dashboard is fully responsive. Even the complex charts adapt to small screens."
-4. **Inspect Quarantine**: "Any schema violations are captured instantly with full context."
-
-**Impact**: 🤯 **MAXIMUM!**
-
----
-
-## 🛑 **Stopping Everything**
-
-```powershell
-# Stop services
-docker-compose down
-
-# Stop UI
-# Press Ctrl + C in the UI terminal
+# Complete reset (⚠️ deletes all data)
+docker-compose down -v
+docker-compose up -d
 ```
 
 ---
 
-**Built with ❤️ for data quality and beautiful UIs**
+## 📖 Need More Help?
+
+- **Detailed Guide**: [QUICKSTART.md](./QUICKSTART.md)
+- **Architecture**: [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
+- **Full README**: [../README.md](../README.md)
+
+---
+
+**⏱️ Total Time: 3 minutes**
